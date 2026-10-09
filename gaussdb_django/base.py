@@ -259,9 +259,10 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         conn_params.pop("assume_role", None)
         conn_params.pop("isolation_level", None)
 
-        pool_options = conn_params.pop("pool", None)
-        if pool_options:
-            raise ImproperlyConfigured("Database pooling requires gaussdb >= 1.0.3")
+        # The "pool" option is consumed by the pool property and must not be
+        # passed down to the connection itself. gaussdb is based on psycopg3 and
+        # always supports pooling, so no version guard is needed here.
+        conn_params.pop("pool", None)
 
         server_side_binding = conn_params.pop("server_side_binding", None)
         conn_params.setdefault(
